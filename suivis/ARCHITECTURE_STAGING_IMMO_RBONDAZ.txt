@@ -1,0 +1,199 @@
+TABLE : CIVILITE
+- ID_CIV  : NUMBER(38,0)  NOT NULL
+- NOM_CIV : CHAR(80 BYTE) NOT NULL
+
+TABLE : VILLE
+- ID_VILLE : NUMBER(38,0)   NOT NULL
+- NOM_VILLE : CHAR(80 BYTE) NULL
+- ID_DPT : NUMBER(38,0)     NULL
+
+TABLE : DEPARTEMENT
+- ID_DPT  : NUMBER(38,0)    NOT NULL
+- NOM_DPT : CHAR(80 BYTE)   NOT NULL
+
+TABLE : CLIENT
+- ID_CLIENT : NUMBER(38,0)   NOT NULL
+- NOM_CLIENT : CHAR(80 BYTE) NOT NULL
+- PRENOM_CLIENT : CHAR(80 BYTE) NOT NULL
+- DATE_NAISSANCE : DATE      NULL
+- ID_CIV : NUMBER(38,0)      NOT NULL
+- ID_VILLE : NUMBER(38,0)    NOT NULL
+
+TABLE : AGENT
+- ID_AGENT : NUMBER(38,0)   NOT NULL
+- NOM_AGENT : CHAR(80 BYTE) NOT NULL
+- PRENOM_AGENT : VARCHAR2(80 BYTE) NOT NULL
+
+TABLE : ACHAT
+- ID_BIEN : NUMBER(38,0)       NOT NULL
+- ID_CLIENT : NUMBER(38,0)     NOT NULL
+- DATE_VISITE_ACHAT : DATE     NULL
+- DATE_ACHAT : DATE            NULL
+- PRIX_ACHAT : NUMBER(38,0)    NULL
+- ID_AGENT : NUMBER(38,0)      NOT NULL
+
+TABLE : LOCATION
+- ID_BIEN : NUMBER(38,0)       NOT NULL
+- ID_CLIENT : NUMBER(38,0)     NOT NULL
+- DATE_VISITE_LOC : DATE       NULL
+- DATE_LOC : DATE              NULL
+- PRIX_LOC : NUMBER(38,0)      NULL
+- ID_AGENT : NUMBER(38,0)      NOT NULL
+
+TABLE : BIEN
+- ID_BIEN : NUMBER(38,0)          NOT NULL
+- CODE_POSTAL_BIEN : CHAR(5 BYTE) NOT NULL
+- NB_PIECE : NUMBER(38,0)         NULL
+- SURFACE_BIEN : NUMBER(38,0)     NULL
+- PRIX_BIEN : NUMBER(38,0)        NULL
+- ID_LOT : NUMBER(38,0)           NULL
+- ID_VILLE : NUMBER(38,0)         NOT NULL
+- ID_TYPE : NUMBER(38,0)          NOT NULL
+- ID_ETAT : NUMBER(38,0)          NOT NULL
+- ADRESSE_BIEN : CHAR(150 BYTE)   NULL
+
+TABLE : ETAT
+- ID_ETAT : NUMBER(38,0)      NOT NULL
+- NOM_ETAT : CHAR(80 BYTE)    NOT NULL
+
+TABLE : TYPE_BIEN
+- ID_TYPE  : NUMBER(38,0)      NOT NULL
+- NOM_TYPE : CHAR(80 BYTE)     NOT NULL
+
+#########################################################################
+Requête Oracle type (extraction D_BIEN)
+
+(mémo pratique, tu peux la garder telle quelle)
+
+SELECT
+  b.id_bien                  AS id_bien_src,
+  TRIM(b.adresse_bien)       AS adresse,
+  TRIM(b.code_postal_bien)   AS code_postal,
+  b.nb_piece                 AS nb_piece,
+  b.surface_bien             AS surface_bien,
+  b.prix_bien                AS prix_affiche,
+  b.id_lot                   AS id_lot_src,
+  b.id_ville                 AS id_ville_src,
+
+  b.id_type                  AS type_id_src,
+  TRIM(t.nom_type)           AS type_nom,
+
+  b.id_etat                  AS etat_id_src,
+  TRIM(e.nom_etat)           AS etat_nom
+FROM rbondaz.bien b
+JOIN rbondaz.type_bien t ON t.id_type = b.id_type
+JOIN rbondaz.etat e      ON e.id_etat = b.id_etat;
+
+SELECT
+    b.ID_BIEN,
+    b.ADRESSE_BIEN,
+    b.CODE_POSTAL_BIEN,
+    b.NB_PIECE,
+    b.SURFACE_BIEN,
+    b.PRIX_BIEN,
+
+    tb.NOM_TYPE AS TYPE_BIEN,
+    e.NOM_ETAT AS ETAT_BIEN,
+
+    v.NOM_VILLE AS VILLE_BIEN,
+    d.NOM_DPT AS DEPARTEMENT,
+
+    ac.ID_CLIENT,
+    c.NOM_CLIENT,
+    c.PRENOM_CLIENT,
+    c.DATE_NAISSANCE,
+    civ.NOM_CIV AS CIVILITE_CLIENT,
+
+    ag.NOM_AGENT,
+    ag.PRENOM_AGENT,
+
+    ac.DATE_VISITE_ACHAT,
+    ac.DATE_ACHAT,
+    ac.PRIX_ACHAT,
+
+    l.DATE_VISITE_LOC,
+    l.DATE_LOC,
+    l.PRIX_LOC
+
+FROM rbondaz.BIEN b
+
+JOIN rbondaz.TYPE_BIEN tb ON tb.ID_TYPE = b.ID_TYPE
+JOIN rbondaz.ETAT e ON e.ID_ETAT = b.ID_ETAT
+
+JOIN rbondaz.VILLE v ON v.ID_VILLE = b.ID_VILLE
+JOIN rbondaz.DEPARTEMENT d ON d.ID_DPT = v.ID_DPT
+
+LEFT JOIN rbondaz.ACHAT ac ON ac.ID_BIEN = b.ID_BIEN
+LEFT JOIN rbondaz.CLIENT c ON c.ID_CLIENT = ac.ID_CLIENT
+LEFT JOIN rbondaz.CIVILITE civ ON civ.ID_CIV = c.ID_CIV
+LEFT JOIN rbondaz.AGENT ag ON ag.ID_AGENT = ac.ID_AGENT
+
+LEFT JOIN rbondaz.LOCATION l ON l.ID_BIEN = b.ID_BIEN
+
+WHERE b.ID_BIEN = 1;
+
+
+SELECT
+    -- BIEN
+    b.ID_BIEN,
+    TRIM(b.ADRESSE_BIEN)       AS ADRESSE_BIEN,
+    TRIM(b.CODE_POSTAL_BIEN)   AS CODE_POSTAL_BIEN,
+    b.NB_PIECE,
+    b.SURFACE_BIEN,
+    b.PRIX_BIEN,
+
+    -- TYPE / ETAT
+    tb.NOM_TYPE                AS TYPE_BIEN,
+    e.NOM_ETAT                 AS ETAT_BIEN,
+
+    -- LOCALISATION
+    v.ID_VILLE,
+    v.NOM_VILLE                AS VILLE_BIEN,
+    d.ID_DPT,
+    d.NOM_DPT                  AS DEPARTEMENT,
+
+    -- CLIENT
+    l.ID_CLIENT,
+    c.NOM_CLIENT,
+    c.PRENOM_CLIENT,
+    c.DATE_NAISSANCE,
+    civ.NOM_CIV                AS CIVILITE_CLIENT,
+
+    -- AGENT LOCATION
+    ag.NOM_AGENT,
+    ag.PRENOM_AGENT,
+
+    -- LOCATION (le cœur de la vérif)
+    TRUNC(l.DATE_VISITE_LOC)   AS DATE_VISITE_LOC,
+    TRUNC(l.DATE_LOC)          AS DATE_LOC,
+    l.PRIX_LOC                 AS PRIX_LOC
+
+FROM rbondaz.LOCATION l
+
+JOIN rbondaz.BIEN b        ON b.ID_BIEN = l.ID_BIEN
+JOIN rbondaz.TYPE_BIEN tb  ON tb.ID_TYPE = b.ID_TYPE
+JOIN rbondaz.ETAT e        ON e.ID_ETAT = b.ID_ETAT
+
+JOIN rbondaz.VILLE v       ON v.ID_VILLE = b.ID_VILLE
+JOIN rbondaz.DEPARTEMENT d ON d.ID_DPT = v.ID_DPT
+
+JOIN rbondaz.CLIENT c      ON c.ID_CLIENT = l.ID_CLIENT
+JOIN rbondaz.CIVILITE civ  ON civ.ID_CIV = c.ID_CIV
+JOIN rbondaz.AGENT ag      ON ag.ID_AGENT = l.ID_AGENT
+
+WHERE l.ID_BIEN = 33;
+
+
+#########################################################################
+
+
+
+
+
+
+
+
+
+
+
+

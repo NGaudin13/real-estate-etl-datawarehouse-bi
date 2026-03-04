@@ -1,0 +1,200 @@
+🎯 PROMPT – CONTEXTE PROJET BI & ÉTAT D’AVANCEMENT (MISE À JOUR)
+
+Nous travaillons sur un projet de Business Intelligence pour une agence immobilière.
+
+La base de données Oracle fournie par l’enseignant correspond au système source opérationnel (staging).
+À partir de cette base, nous avons conçu et implémenté un entrepôt de données MySQL, structuré selon un modèle en étoile, destiné à l’analyse décisionnelle dans Power BI.
+
+L’entrepôt est composé de :
+
+Tables de faits
+
+F_ACHAT
+
+F_LOCATION
+
+Dimensions dénormalisées
+
+D_DATE
+
+D_LOCALISATION
+
+D_CLIENT
+
+D_AGENT
+
+D_BIEN
+
+Les clés techniques (SK) sont générées côté MySQL.
+Les identifiants métiers Oracle (ID_*_SRC) sont conservés dans les dimensions afin d’assurer :
+
+la traçabilité vers le système source,
+
+la robustesse des chargements ETL,
+
+l’indépendance de l’entrepôt vis-à-vis d’Oracle.
+
+🔁 Processus ETL
+
+Le processus ETL est implémenté avec Apache Hop, selon une approche modulaire, industrialisée et relançable :
+
+un pipeline par dimension,
+
+un pipeline par table de faits,
+
+un workflow principal pour orchestrer l’exécution.
+
+Chaque pipeline est idempotent :
+il peut être relancé sans créer de doublons grâce à l’utilisation systématique d’étapes Insert / Update basées sur des clés métiers.
+
+Le projet est configuré pour le travail collaboratif via des variables d’environnement (env.local.json).
+La base MySQL entrepotagenceimmo est créée en amont à partir du schéma généré avec DBDiagram.
+
+📅 État d’avancement des dimensions
+📆 D_DATE – Dimension temporelle (terminée)
+
+Extraction des dates depuis ACHAT et LOCATION (Oracle)
+
+Déduplication
+
+Calcul des attributs calendaires :
+
+jour, mois, année
+
+semaine ISO
+
+trimestre
+
+jour de la semaine
+
+indicateur week-end
+
+Chargement via Insert / Update
+
+Les libellés textuels (nom du mois, nom du jour) sont volontairement gérés dans Power BI, afin de séparer la logique analytique de la restitution et d’éviter toute dépendance linguistique dans l’entrepôt.
+
+🌍 D_LOCALISATION – Dimension géographique (terminée)
+
+Extraction des villes et départements depuis Oracle
+
+Nettoyage et harmonisation des libellés
+
+Enrichissement avec la région, absente du système source, via une table de mapping dédiée MAP_DPT_REGION
+
+Chargement via Insert / Update
+
+La clé métier ID_VILLE_SRC est utilisée pour le lookup ETL.
+La clé technique SK_LOCALISATION est référencée par D_CLIENT, D_BIEN, F_ACHAT et F_LOCATION.
+
+👤 D_CLIENT – Dimension client (terminée)
+
+Extraction depuis la table CLIENT (Oracle)
+
+Calcul de l’âge à partir de la date de naissance
+
+Génération des attributs dérivés :
+
+sexe
+
+civilité
+
+tranche d’âge
+
+Rattachement à la localisation via un Database Lookup vers D_LOCALISATION
+
+Chargement via Insert / Update
+
+La clé métier ID_CLIENT_SRC garantit l’idempotence du chargement.
+La clé technique SK_CLIENT est utilisée dans les tables de faits.
+
+🏠 D_BIEN – Dimension bien immobilier (terminée)
+
+La dimension D_BIEN centralise l’ensemble des informations descriptives relatives aux biens immobiliers.
+
+Extraction depuis la table BIEN (Oracle)
+
+Enrichissement avec les référentiels TYPE_BIEN et ETAT
+
+Conservation des identifiants métiers et des libellés :
+
+type_id_src / type_nom
+
+etat_id_src / etat_nom
+
+Calcul d’indicateurs métier directement dans l’ETL :
+
+est_a_renover (booléen)
+
+est_garage (booléen)
+
+Rattachement à la localisation via SK_LOCALISATION
+
+Chargement via Insert / Update
+
+Génération automatique de la clé technique SK_BIEN
+
+Gestion des lots de biens
+
+Le rattachement des biens appartenant à un lot est traité dans un pipeline dédié P_D_BIEN_LOT, exécuté après le chargement de D_BIEN.
+Ce pipeline traduit la relation source ID_LOT_SRC → ID_BIEN_SRC en une relation technique stable LOT_PARENT_SK_BIEN → SK_BIEN, évitant toute dépendance circulaire lors du chargement initial.
+
+🧠 Règle clé comprise et validée
+
+👉 En BI, on ne recopie pas les tables Oracle.
+👉 On construit des dimensions métier.
+👉 On dénormalise dans une dimension tout ce qui décrit le même axe d’analyse.
+
+Cela implique que :
+
+plusieurs tables sources peuvent être fusionnées,
+
+tant qu’elles décrivent le même objet métier,
+
+et qu’elles n’apportent pas un axe d’analyse autonome.
+
+💬 Remarque importante sur la modélisation de D_BIEN
+
+Les tables TYPE_BIEN (6 lignes) et ETAT (4 lignes) du système source Oracle sont des référentiels à très faible cardinalité, composés uniquement d’un identifiant et d’un libellé.
+
+Dans ce projet, il a été choisi volontairement et professionnellement de :
+
+ne pas créer de dimensions dédiées D_TYPE_BIEN et D_ETAT,
+
+mais d’intégrer directement leurs attributs dans D_BIEN.
+
+Ce choix est justifié car :
+
+ces tables ne portent pas d’axe d’analyse autonome,
+
+elles qualifient uniquement le bien,
+
+cela simplifie le modèle en étoile,
+
+réduit le nombre de jointures,
+
+améliore la lisibilité et les performances dans Power BI.
+
+🎯 État actuel du projet
+
+Les dimensions D_DATE, D_LOCALISATION, D_CLIENT et D_BIEN sont entièrement implémentées et opérationnelles.
+La gestion des lots de biens, via le pipeline dédié P_D_BIEN_LOT, est également finalisée et permet de représenter correctement les relations parent/enfant entre biens (ex. garage rattaché à un appartement).
+
+La dimension D_AGENT a été mise en place à l’aide d’un pipeline spécifique P_D_AGENT.
+Ce pipeline extrait les agents depuis la table AGENT du système source Oracle et alimente la table d_agent de l’entrepôt MySQL via une étape Insert / Update basée sur la clé métier id_agent_src.
+Ce mécanisme garantit l’idempotence du chargement, la génération automatique de la clé technique sk_agent côté MySQL, ainsi qu’une correspondance stable entre les identifiants métiers et les clés techniques utilisées dans les tables de faits.
+
+À ce stade, l’ensemble des dimensions nécessaires à l’analyse décisionnelle est disponible et cohérent avec le modèle en étoile défini.
+
+Les prochaines étapes du projet consistent à :
+
+implémenter les pipelines de chargement des tables de faits F_ACHAT et F_LOCATION,
+
+réaliser les lookups vers les dimensions (D_DATE, D_CLIENT, D_AGENT, D_BIEN, D_LOCALISATION) afin de remplacer les identifiants métiers par les clés techniques,
+
+calculer les indicateurs métier directement dans les faits (prix négocié, écart de prix, délais entre visite et achat/location),
+
+et enfin connecter l’entrepôt à Power BI pour la construction des tableaux de bord et l’analyse des indicateurs demandés par le métier.
+
+(Optionnel – phrase de clôture très propre)
+
+Le projet se situe ainsi à une étape charnière, avec un socle dimensionnel stable et prêt à accueillir les données transactionnelles nécessaires aux analyses décisionnelles.
