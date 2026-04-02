@@ -1,0 +1,27 @@
+Semaine 1 (2–6 mars)
+
+Travail en commun
+
+Réflexion sur l’architecture décisionnelle
+Choix des outils (Oracle, Hop, MySQL, Power BI)
+Semaine 2
+
+Travail mixte
+
+Nicolas : mise en place du pipeline ETL + workflow Apache Hop
+Travail commun : début de la rédaction du rapport Word et de la présentation PPT
+Semaine 3
+Rolland : mise à jour de sa base locale avec l’ETL
+Récupération et intégration des données dans son environnement
+Semaine 4
+
+Travail parallèle
+
+Rolland : création des dashboards Power BI
+Nicolas : finalisation du rapport Word et du PowerPoint
+Semaine 5
+
+Finalisation
+
+Nicolas : connexion locale des dashboards (Power BI ↔ MySQL via ODBC)
+Rolland : complétion des parties restantes du rapport et du PPT
