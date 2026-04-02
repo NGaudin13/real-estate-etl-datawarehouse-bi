@@ -131,7 +131,7 @@
       <set_logfile>N</set_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <parallel>N</parallel>
-      <xloc>512</xloc>
+      <xloc>624</xloc>
       <yloc>208</yloc>
       <attributes_hac/>
     </action>
@@ -157,7 +157,7 @@
       <set_logfile>N</set_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <parallel>N</parallel>
-      <xloc>640</xloc>
+      <xloc>752</xloc>
       <yloc>208</yloc>
       <attributes_hac/>
     </action>
@@ -183,7 +183,7 @@
       <set_logfile>N</set_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <parallel>N</parallel>
-      <xloc>784</xloc>
+      <xloc>896</xloc>
       <yloc>208</yloc>
       <attributes_hac/>
     </action>
@@ -209,7 +209,35 @@
       <set_logfile>N</set_logfile>
       <wait_until_finished>Y</wait_until_finished>
       <parallel>N</parallel>
-      <xloc>928</xloc>
+      <xloc>1040</xloc>
+      <yloc>208</yloc>
+      <attributes_hac/>
+    </action>
+    <action>
+      <name>RUN_P_D_Agent</name>
+      <description/>
+      <type>PIPELINE</type>
+      <attributes/>
+      <add_date>N</add_date>
+      <add_time>N</add_time>
+      <clear_files>N</clear_files>
+      <clear_rows>N</clear_rows>
+      <create_parent_folder>N</create_parent_folder>
+      <exec_per_row>N</exec_per_row>
+      <filename>${PROJECT_HOME}/workflow/P_D_Agent.hpl</filename>
+      <logext/>
+      <logfile/>
+      <loglevel>Basic</loglevel>
+      <parameters>
+        <pass_all_parameters>Y</pass_all_parameters>
+      </parameters>
+      <params_from_previous>N</params_from_previous>
+      <run_configuration>local</run_configuration>
+      <set_append_logfile>N</set_append_logfile>
+      <set_logfile>N</set_logfile>
+      <wait_until_finished>Y</wait_until_finished>
+      <parallel>N</parallel>
+      <xloc>512</xloc>
       <yloc>208</yloc>
       <attributes_hac/>
     </action>
@@ -237,13 +265,6 @@
       <unconditional>N</unconditional>
     </hop>
     <hop>
-      <from>RUN_P_D_Client</from>
-      <to>RUN_P_D_BIEN</to>
-      <enabled>Y</enabled>
-      <evaluation>Y</evaluation>
-      <unconditional>N</unconditional>
-    </hop>
-    <hop>
       <from>RUN_P_D_BIEN</from>
       <to>RUN_P_D_BIEN_LOT</to>
       <enabled>Y</enabled>
@@ -260,6 +281,20 @@
     <hop>
       <from>RUN_P_F_ACHAT</from>
       <to>RUN_P_F_LOCATION</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>RUN_P_D_Client</from>
+      <to>RUN_P_D_Agent</to>
+      <enabled>Y</enabled>
+      <evaluation>Y</evaluation>
+      <unconditional>N</unconditional>
+    </hop>
+    <hop>
+      <from>RUN_P_D_Agent</from>
+      <to>RUN_P_D_BIEN</to>
       <enabled>Y</enabled>
       <evaluation>Y</evaluation>
       <unconditional>N</unconditional>

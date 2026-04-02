@@ -33,8 +33,8 @@
       <fontname>Segoe UI</fontname>
       <fontsize>9</fontsize>
       <height>181</height>
-      <xloc>112</xloc>
-      <yloc>32</yloc>
+      <xloc>80</xloc>
+      <yloc>48</yloc>
       <note>Note globale – Pipeline P_D_DATE
 
 Le pipeline P_D_DATE construit la dimension temporelle D_DATE à partir des dates issues des tables ACHAT et LOCATION du système source Oracle.
