@@ -20,11 +20,40 @@ Contient :
 - les dimensions et tables de faits utilisées dans l’entrepôt.
 
 ### ETL
+
 Contient :
 - les workflows Apache Hop,
 - les pipelines de transformation,
 - les configurations ETL,
 - les métadonnées du projet.
+
+Pour exécuter les pipelines, il faut installer Apache Hop et disposer de deux connexions :
+- une connexion Oracle vers la base source de l’IUT ;
+- une connexion MySQL locale vers l’entrepôt `entrepotagenceimmo`.
+
+Avant l’exécution, il faut importer dans MySQL le dump de structure de l’entrepôt afin de créer les tables nécessaires.  
+La base MySQL attendue se nomme :
+
+`entrepotagenceimmo`
+
+Les variables de connexion sont définies dans la configuration du projet Apache Hop.  
+Elles permettent d’adapter facilement les accès à l’environnement local sans modifier les pipelines.
+
+Principales variables utilisées :
+- `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, `DB_PASS` pour MySQL ;
+- `ORA_HOST`, `ORA_PORT`, `ORA_DB`, `ORA_USER`, `ORA_PASS`, `ORA_SERVICE` pour Oracle.
+
+Le fichier `project-config.json` définit l’organisation interne du projet Apache Hop, notamment :
+- le dossier des métadonnées ;
+- le dossier des datasets ;
+- l’utilisation du dossier projet comme base d’exécution.
+
+En résumé, pour relancer l’ETL :
+1. installer Apache Hop ;
+2. créer/importer la base MySQL `entrepotagenceimmo` avec le dump de structure ;
+3. vérifier les variables de connexion Oracle et MySQL ;
+4. ouvrir le projet Apache Hop ;
+5. exécuter le workflow principal.
 
 ### power_bi
 Contient :
