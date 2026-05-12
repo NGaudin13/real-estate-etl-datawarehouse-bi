@@ -14,10 +14,36 @@ Oracle → Apache Hop (ETL) → MySQL (entrepôt décisionnel) → Power BI
 ## Organisation du projet
 
 ### dataModel
+
 Contient :
-- le modèle décisionnel en étoile,
-- les dumps SQL de structure et données,
+- le modèle décisionnel en étoile ;
+- les dumps SQL de structure et données ;
 - les dimensions et tables de faits utilisées dans l’entrepôt.
+
+#### Modèle décisionnel — thème sombre
+
+![Modèle décisionnel sombre](data_model/media/datawarehouseAgenceImmo_drawdb.png)
+
+*Figure 1 — Modèle décisionnel en étoile de l’entrepôt immobilier (version thème sombre).*
+
+
+#### Modèle décisionnel — thème clair
+
+![Modèle décisionnel clair](data_model/media/datawarehouseAgenceImmo_drawdb_theme_white.png)
+
+*Figure 2 — Version thème clair du modèle décisionnel utilisée pour la documentation et l’impression.*
+
+Le modèle est organisé autour :
+- des dimensions (`d_agent`, `d_client`, `d_bien`, `d_date`, `d_localisation`) ;
+- des tables de faits (`f_achat`, `f_location`) ;
+- d’une table de correspondance département/région (`map_dpt_region`).
+
+Une auto-relation est également présente dans `d_bien` afin de gérer les dépendances de lots :
+- garage ;
+- cave ;
+- lot secondaire rattaché à un bien principal.
+
+---
 
 ### ETL
 
