@@ -22,14 +22,14 @@ Contient :
 
 #### Modèle décisionnel — thème sombre
 
-![Modèle décisionnel sombre](data_model/media/datawarehouseAgenceImmo_drawdb.png)
+![Modèle décisionnel sombre](data_model/media/datawarehouseAgenceImmo_drawdb.jpeg)
 
 *Figure 1 — Modèle décisionnel en étoile de l’entrepôt immobilier (version thème sombre).*
 
 
 #### Modèle décisionnel — thème clair
 
-![Modèle décisionnel clair](data_model/media/datawarehouseAgenceImmo_drawdb_theme_white.png)
+![Modèle décisionnel clair](data_model/media/datawarehouseAgenceImmo_drawdb_theme_white.jpeg)
 
 *Figure 2 — Version thème clair du modèle décisionnel utilisée pour la documentation et l’impression.*
 
